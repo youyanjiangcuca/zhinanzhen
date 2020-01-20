@@ -650,7 +650,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K5YAMT975P;
+				DEVELOPMENT_TEAM = SBJ8FWQRX6;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/SDK/ShareSDK/Support/PlatformSDK/QQSDK",
@@ -671,7 +671,7 @@
 					"$(PROJECT_DIR)/SDK/ShareSDK/Support/PlatformSDK/WeChatSDK",
 				);
 				OTHER_LDFLAGS = "-Objc";
-				PRODUCT_BUNDLE_IDENTIFIER = com.jsj.zhuangxiu;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jsj.zxznz;
 				PRODUCT_NAME = "装修指南针";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -682,7 +682,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K5YAMT975P;
+				DEVELOPMENT_TEAM = SBJ8FWQRX6;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/SDK/ShareSDK/Support/PlatformSDK/QQSDK",
@@ -703,7 +703,7 @@
 					"$(PROJECT_DIR)/SDK/ShareSDK/Support/PlatformSDK/WeChatSDK",
 				);
 				OTHER_LDFLAGS = "-Objc";
-				PRODUCT_BUNDLE_IDENTIFIER = com.jsj.zhuangxiu;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jsj.zxznz;
 				PRODUCT_NAME = "装修指南针";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

@@ -11,11 +11,16 @@
 #import <MapKit/MapKit.h>
 #import <ShareSDK/ShareSDK.h>
 #import <ShareSDKUI/ShareSDK+SSUI.h>
-@interface ViewController ()<WKUIDelegate,WKNavigationDelegate,WKScriptMessageHandler>
+@interface ViewController ()<WKUIDelegate,WKNavigationDelegate,WKScriptMessageHandler,CLLocationManagerDelegate>
 
 @property (nonatomic, strong) WKWebView *wkWebView;
 @property (nonatomic, strong) WKWebViewConfiguration *config;
 @property (nonatomic, strong) NSMutableArray *mapArray;
+@property (nonatomic, strong) CLLocationManager *locationManager;
+//经度
+@property (nonatomic, assign) float currLongitude;
+//纬度
+@property (nonatomic, assign) float currLatitude;
 
 @end
 
@@ -23,16 +28,40 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     [self initWKWebView];
-//    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-//    [btn setTitle:@"确认" forState:UIControlStateNormal];
-//    [btn addTarget:self action:@selector(showShareSDkAlert) forControlEvents:UIControlEventTouchUpInside];
-//    [btn setBackgroundColor:[UIColor orangeColor]];
-//    btn.frame = CGRectMake(100, 100, 100, 50);
-//    [self.view addSubview:btn];
+    
+    [self initLocationManager];
+    
+    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [btn setTitle:@"定位" forState:UIControlStateNormal];
+    [btn addTarget:self action:@selector(showAlert) forControlEvents:UIControlEventTouchUpInside];
+    [btn setBackgroundColor:[UIColor orangeColor]];
+    btn.frame = CGRectMake(50, 100, 100, 50);
+    [self.view addSubview:btn];
+    
+    UIButton *btn2 = [UIButton buttonWithType:UIButtonTypeCustom];
+    [btn2 setTitle:@"导航" forState:UIControlStateNormal];
+    [btn2 addTarget:self action:@selector(btnClick) forControlEvents:UIControlEventTouchUpInside];
+    [btn2 setBackgroundColor:[UIColor orangeColor]];
+    btn2.frame = CGRectMake(200, 100, 100, 50);
+    [self.view addSubview:btn2];
+    
+    UIButton *btn3 = [UIButton buttonWithType:UIButtonTypeCustom];
+    [btn3 setTitle:@"分享" forState:UIControlStateNormal];
+    [btn3 addTarget:self action:@selector(showShareSDkAlert) forControlEvents:UIControlEventTouchUpInside];
+    [btn3 setBackgroundColor:[UIColor orangeColor]];
+    btn3.frame = CGRectMake(300, 100, 100, 50);
+    [self.view addSubview:btn3];
 }
+-(void)showAlert{
+    NSString *message = [NSString stringWithFormat:@"经度为:%f\n纬度为:%f",self.currLongitude,self.currLatitude];
+    UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
 
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil];
+    [alertVC addAction:cancel];
+    [self presentViewController:alertVC animated:YES completion:nil];
+}
 - (void)initWKWebView {
     if (!_wkWebView) {
         //初始化一个WKWebViewConfiguration对象
@@ -76,11 +105,53 @@
     }
     
 }
+-(void)initLocationManager{
+    if ([CLLocationManager locationServicesEnabled]) {
+        //判断定位操作是否被允许
+        _locationManager = [[CLLocationManager alloc] init];
+        _locationManager.delegate = self;
+        _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+        _locationManager.distanceFilter = 10.0f;
+        [_locationManager requestWhenInUseAuthorization];
+        [_locationManager startUpdatingLocation];
+    }
+    else{
+        //不能定位用户的位置的情况再次进行判断，并给与用户提示
+        //提醒用户检查当前的网络情况//2提醒用户打开定位开关
+        NSLog(@"当前信号弱，无法获取定位");
+    }
+}
+-(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+{
+    CLLocation *currLocation = [locations lastObject];
+    self.currLatitude = currLocation.coordinate.latitude;
+    self.currLongitude = currLocation.coordinate.longitude;
+    NSLog(@"经度=%f  纬度=%f",currLocation.coordinate.latitude,currLocation.coordinate.longitude);
+}
+-(void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:@"提示" message:@"请在设置中打开定位" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"打开定位" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil];
+    [alertVC addAction:ok];
+    [alertVC addAction:cancel];
+    [self presentViewController:alertVC animated:YES completion:nil];
+}
 - (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
     NSLog(@"%@",message.body);
 }
 - (void)getLocationInfo {
     
+    NSString* paramString =@"我是 OC 调用 JS";
+
+    NSString* jsStr = [NSString stringWithFormat:@"shareResult('%@')",paramString];
+
+    [_wkWebView evaluateJavaScript:jsStr completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+        NSLog(@"%@...%@",result,error);
+    }];
+
 
 }
 -(void)btnClick{
